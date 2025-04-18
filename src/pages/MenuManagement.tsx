@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +15,7 @@ import {
   DollarSign,
   ToggleLeft,
   ToggleRight,
+  Globe,
 } from "lucide-react";
 import { mockCategories, mockMenuItems } from "@/data/mockData";
 import { Switch } from "@/components/ui/switch";
@@ -31,7 +31,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-// Define menu item type
 type MenuItem = {
   id: string;
   name: string;
@@ -42,7 +41,6 @@ type MenuItem = {
   available: boolean;
 };
 
-// Define category type
 type Category = {
   id: string;
   name: string;
@@ -59,7 +57,6 @@ export default function MenuManagement() {
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
   const [newCategory, setNewCategory] = useState("");
 
-  // Format currency
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -67,7 +64,6 @@ export default function MenuManagement() {
     }).format(amount);
   };
 
-  // Filter menu items based on search term and filters
   const filteredMenuItems = menuItems.filter(item => {
     const matchesSearch = searchTerm === "" || 
       item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -82,7 +78,6 @@ export default function MenuManagement() {
     return matchesSearch && matchesCategory && matchesAvailability;
   });
 
-  // Handle toggling item availability
   const toggleItemAvailability = (id: string) => {
     setMenuItems(prevItems => 
       prevItems.map(item => 
@@ -91,17 +86,14 @@ export default function MenuManagement() {
     );
   };
 
-  // Handle deleting item
   const deleteMenuItem = (id: string) => {
     setMenuItems(prevItems => prevItems.filter(item => item.id !== id));
   };
 
-  // Handle editing menu item
   const editMenuItem = (item: MenuItem) => {
     setMenuItemBeingEdited(item);
   };
 
-  // Handle saving menu item changes
   const saveMenuItemChanges = (updatedItem: MenuItem) => {
     setMenuItems(prevItems => 
       prevItems.map(item => 
@@ -111,7 +103,6 @@ export default function MenuManagement() {
     setMenuItemBeingEdited(null);
   };
 
-  // Handle adding new category
   const addCategory = () => {
     if (newCategory.trim() !== "") {
       const newCategoryId = `cat${categories.length + 1}`;
@@ -126,6 +117,12 @@ export default function MenuManagement() {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Menu Management</h1>
         <div className="flex items-center gap-2">
+          <Button variant="outline" asChild>
+            <a href="/online-menu" target="_blank" className="flex items-center gap-2">
+              <Globe className="h-4 w-4" />
+              View Online Menu
+            </a>
+          </Button>
           <Dialog open={isAddCategoryOpen} onOpenChange={setIsAddCategoryOpen}>
             <DialogTrigger asChild>
               <Button variant="outline">
@@ -401,7 +398,6 @@ export default function MenuManagement() {
         </TabsContent>
       </Tabs>
 
-      {/* Edit Menu Item Dialog */}
       {menuItemBeingEdited && (
         <Dialog 
           open={!!menuItemBeingEdited} 

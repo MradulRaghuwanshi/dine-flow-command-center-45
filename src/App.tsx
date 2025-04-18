@@ -10,6 +10,7 @@ import MenuManagement from "./pages/MenuManagement";
 import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import OnlineMenu from "./pages/OnlineMenu";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
+          <Route path="/online-menu" element={<OnlineMenu />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
