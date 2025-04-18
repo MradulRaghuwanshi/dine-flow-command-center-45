@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,6 +12,8 @@ import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import OnlineMenu from "./pages/OnlineMenu";
+import TableSelection from "./pages/TableSelection";
+import PaymentPage from "./pages/PaymentPage";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +32,8 @@ const App = () => (
             <Route path="/settings" element={<Settings />} />
           </Route>
           <Route path="/online-menu" element={<OnlineMenu />} />
+          <Route path="/online-menu/table-selection" element={<TableSelection />} />
+          <Route path="/online-menu/payment" element={<PaymentPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
