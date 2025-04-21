@@ -3,8 +3,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, QrCode, CreditCard, Banknote, Check } from "lucide-react";
+import { ArrowLeft, QrCode, CreditCard, Banknote, Check, IndianRupee } from "lucide-react";
 import { toast } from "sonner";
+import { formatCurrency } from "@/utils/paymentUtils";
 
 // Mock QR code image
 const mockQrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://payment.example.com/12345";
@@ -119,22 +120,22 @@ export default function PaymentPage() {
                   {cart.map((item) => (
                     <div key={item.id} className="flex justify-between">
                       <span>{item.quantity} × {item.name}</span>
-                      <span>${(item.price * item.quantity).toFixed(2)}</span>
+                      <span>{formatCurrency(item.price * item.quantity)}</span>
                     </div>
                   ))}
                 </div>
                 <div className="pt-4 border-t">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span>${totalPrice.toFixed(2)}</span>
+                    <span>{formatCurrency(totalPrice)}</span>
                   </div>
                   <div className="flex justify-between text-muted-foreground">
                     <span>Tax (included)</span>
-                    <span>${(totalPrice * 0.1).toFixed(2)}</span>
+                    <span>{formatCurrency(totalPrice * 0.1)}</span>
                   </div>
                   <div className="flex justify-between font-bold mt-2">
                     <span>Total</span>
-                    <span>${totalPrice.toFixed(2)}</span>
+                    <span>{formatCurrency(totalPrice)}</span>
                   </div>
                 </div>
                 <div className="mt-4 bg-blue-50 p-3 rounded text-sm text-blue-700">
@@ -202,8 +203,8 @@ export default function PaymentPage() {
                       className="w-full"
                       onClick={handleUpiPayment}
                     >
-                      <CreditCard className="h-4 w-4 mr-2" />
-                      Pay ${totalPrice.toFixed(2)}
+                      <IndianRupee className="h-4 w-4 mr-2" />
+                      Pay {formatCurrency(totalPrice)}
                     </Button>
                   </div>
                 )}

@@ -26,6 +26,8 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import PromotionSlider from "@/components/menu/PromotionSlider";
+import { formatCurrency } from "@/utils/paymentUtils";
 
 // Types for cart items
 type CartItem = {
@@ -177,7 +179,7 @@ export default function OnlineMenu() {
                             <div className="flex-1">
                               <h3 className="font-medium">{item.name}</h3>
                               <p className="text-sm text-muted-foreground">
-                                ${item.price.toFixed(2)}
+                                {formatCurrency(item.price)}
                               </p>
                             </div>
                             <div className="flex items-center gap-1">
@@ -208,7 +210,7 @@ export default function OnlineMenu() {
                       <Separator />
                       <div className="flex justify-between">
                         <span className="font-medium">Total</span>
-                        <span className="font-bold">${totalPrice.toFixed(2)}</span>
+                        <span className="font-bold">{formatCurrency(totalPrice)}</span>
                       </div>
                       
                       <div className="flex gap-2">
@@ -251,6 +253,9 @@ export default function OnlineMenu() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6 flex-1">
+        {/* Promotion Slider */}
+        <PromotionSlider />
+        
         <div className="grid gap-6">
           {mockCategories.map((category) => {
             const categoryItems = filteredMenuItems.filter(
@@ -294,7 +299,7 @@ export default function OnlineMenu() {
                             <div className="flex-1">
                               <h3 className="font-medium">{item.name}</h3>
                               <p className="text-sm text-muted-foreground">
-                                ${item.price.toFixed(2)}
+                                {formatCurrency(item.price)}
                               </p>
                               <div className="flex items-center gap-1 mt-1">
                                 <Badge 
