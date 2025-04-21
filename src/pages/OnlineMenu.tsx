@@ -1,32 +1,12 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { 
-  ShoppingCart, 
-  Search, 
-  PlusCircle, 
-  MinusCircle,
-  ChevronDown,
-  ChevronUp
-} from "lucide-react";
+import { Search } from "lucide-react";
 import { mockCategories, mockMenuItems } from "@/data/mockData";
-import { Badge } from "@/components/ui/badge";
-import { 
-  Sheet, 
-  SheetContent, 
-  SheetHeader, 
-  SheetTitle, 
-  SheetTrigger,
-  SheetFooter,
-  SheetClose
-} from "@/components/ui/sheet";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import PromotionSlider from "@/components/menu/PromotionSlider";
-import { formatCurrency } from "@/utils/paymentUtils";
+import { CartSheet } from "@/components/menu/CartSheet";
+import { MenuCategory } from "@/components/menu/MenuCategory";
 
 // Types for cart items
 type CartItem = {
@@ -41,7 +21,7 @@ export default function OnlineMenu() {
   const [searchTerm, setSearchTerm] = useState("");
   const [cart, setCart] = useState<CartItem[]>([]);
   const [expandedCategories, setExpandedCategories] = useState<string[]>(mockCategories.map(c => c.id));
-  const [offersList, setOffersList] = useState([
+  const [offersList] = useState([
     {
       id: "promo1",
       title: "50% Off on All Appetizers",
@@ -49,9 +29,7 @@ export default function OnlineMenu() {
       imageUrl: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1000",
       linkUrl: "/online-menu#appetizers",
     },
-    // Add more offers here or get from localStorage/mock for now
   ]);
-  const navigate = useNavigate();
 
   // Calculate total items in cart
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -71,14 +49,12 @@ export default function OnlineMenu() {
       const existingItem = prevCart.find(cartItem => cartItem.id === item.id);
       
       if (existingItem) {
-        // Increment quantity if item already in cart
         return prevCart.map(cartItem => 
           cartItem.id === item.id 
             ? { ...cartItem, quantity: cartItem.quantity + 1 } 
             : cartItem
         );
       } else {
-        // Add new item to cart
         return [...prevCart, { 
           id: item.id, 
           name: item.name, 
@@ -98,14 +74,12 @@ export default function OnlineMenu() {
       const existingItem = prevCart.find(item => item.id === itemId);
       
       if (existingItem && existingItem.quantity > 1) {
-        // Decrement quantity if more than 1
         return prevCart.map(item => 
           item.id === itemId 
             ? { ...item, quantity: item.quantity - 1 } 
             : item
         );
       } else {
-        // Remove item from cart
         return prevCart.filter(item => item.id !== itemId);
       }
     });
@@ -126,21 +100,6 @@ export default function OnlineMenu() {
     );
   };
 
-  // Handle checkout
-  const handleCheckout = () => {
-    if (cart.length === 0) {
-      toast.error("Your cart is empty");
-      return;
-    }
-    
-    // Store cart in localStorage for use in checkout process
-    localStorage.setItem("dineflow-cart", JSON.stringify(cart));
-    localStorage.setItem("dineflow-total", totalPrice.toString());
-    
-    // Navigate to table selection page
-    navigate("/online-menu/table-selection");
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
@@ -151,99 +110,14 @@ export default function OnlineMenu() {
           </div>
           
           <div className="flex items-center gap-2">
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="outline" className="relative">
-                  <ShoppingCart className="h-5 w-5" />
-                  {totalItems > 0 && (
-                    <Badge className="absolute -top-2 -right-2 bg-primary text-white px-1.5 py-0.5 rounded-full text-xs">
-                      {totalItems}
-                    </Badge>
-                  )}
-                </Button>
-              </SheetTrigger>
-              <SheetContent className="w-full sm:max-w-md">
-                <SheetHeader>
-                  <SheetTitle>Your Cart</SheetTitle>
-                </SheetHeader>
-                
-                {cart.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-40 text-center">
-                    <ShoppingCart className="h-12 w-12 text-gray-300 mb-2" />
-                    <p className="text-muted-foreground">Your cart is empty</p>
-                  </div>
-                ) : (
-                  <>
-                    <ScrollArea className="flex-1 mt-4 pr-4 h-[calc(100vh-12rem)]">
-                      <div className="space-y-4">
-                        {cart.map((item) => (
-                          <div key={item.id} className="flex items-center gap-4">
-                            <div className="h-16 w-16 rounded-md overflow-hidden">
-                              <img
-                                src={item.image}
-                                alt={item.name}
-                                className="h-full w-full object-cover"
-                              />
-                            </div>
-                            <div className="flex-1">
-                              <h3 className="font-medium">{item.name}</h3>
-                              <p className="text-sm text-muted-foreground">
-                                {formatCurrency(item.price)}
-                              </p>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Button 
-                                variant="ghost" 
-                                size="icon" 
-                                className="h-8 w-8"
-                                onClick={() => removeFromCart(item.id)}
-                              >
-                                <MinusCircle className="h-4 w-4" />
-                              </Button>
-                              <span className="w-5 text-center">{item.quantity}</span>
-                              <Button 
-                                variant="ghost" 
-                                size="icon" 
-                                className="h-8 w-8"
-                                onClick={() => addToCart(mockMenuItems.find(menuItem => menuItem.id === item.id)!)}
-                              >
-                                <PlusCircle className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </ScrollArea>
-                    
-                    <div className="mt-4 space-y-4">
-                      <Separator />
-                      <div className="flex justify-between">
-                        <span className="font-medium">Total</span>
-                        <span className="font-bold">{formatCurrency(totalPrice)}</span>
-                      </div>
-                      
-                      <div className="flex gap-2">
-                        <Button 
-                          variant="outline" 
-                          className="flex-1"
-                          onClick={clearCart}
-                        >
-                          Clear
-                        </Button>
-                        <SheetClose asChild>
-                          <Button 
-                            className="flex-1"
-                            onClick={handleCheckout}
-                          >
-                            Checkout
-                          </Button>
-                        </SheetClose>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </SheetContent>
-            </Sheet>
+            <CartSheet
+              cart={cart}
+              addToCart={addToCart}
+              removeFromCart={removeFromCart}
+              clearCart={clearCart}
+              totalItems={totalItems}
+              totalPrice={totalPrice}
+            />
           </div>
         </div>
         
@@ -262,7 +136,6 @@ export default function OnlineMenu() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6 flex-1">
-        {/* Promotion Slider */}
         <PromotionSlider promotions={offersList} />
         
         <div className="grid gap-6">
@@ -273,72 +146,15 @@ export default function OnlineMenu() {
             
             if (categoryItems.length === 0) return null;
             
-            const isExpanded = expandedCategories.includes(category.id);
-            
             return (
-              <Card key={category.id}>
-                <CardHeader 
-                  className="cursor-pointer py-4" 
-                  onClick={() => toggleCategory(category.id)}
-                >
-                  <div className="flex justify-between items-center">
-                    <CardTitle>{category.name}</CardTitle>
-                    {isExpanded ? (
-                      <ChevronUp className="h-5 w-5 text-gray-500" />
-                    ) : (
-                      <ChevronDown className="h-5 w-5 text-gray-500" />
-                    )}
-                  </div>
-                </CardHeader>
-                
-                {isExpanded && (
-                  <CardContent>
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                      {categoryItems.map((item) => (
-                        <div
-                          key={item.id}
-                          className="flex flex-col p-4 rounded-lg border bg-card"
-                        >
-                          <div className="flex gap-4">
-                            <img
-                              src={item.image}
-                              alt={item.name}
-                              className="h-16 w-16 object-cover rounded-md"
-                            />
-                            <div className="flex-1">
-                              <h3 className="font-medium">{item.name}</h3>
-                              <p className="text-sm text-muted-foreground">
-                                {formatCurrency(item.price)}
-                              </p>
-                              <div className="flex items-center gap-1 mt-1">
-                                <Badge 
-                                  variant={item.available ? "default" : "secondary"}
-                                  className="text-xs"
-                                >
-                                  {item.available ? "Available" : "Unavailable"}
-                                </Badge>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex justify-between items-center mt-4">
-                            <p className="text-sm line-clamp-2 text-muted-foreground">
-                              {item.description}
-                            </p>
-                            <Button 
-                              size="sm"
-                              onClick={() => addToCart(item)}
-                              disabled={!item.available}
-                            >
-                              Add
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                )}
-              </Card>
+              <MenuCategory
+                key={category.id}
+                category={category}
+                items={categoryItems}
+                isExpanded={expandedCategories.includes(category.id)}
+                onToggle={toggleCategory}
+                onAddToCart={addToCart}
+              />
             );
           })}
         </div>
