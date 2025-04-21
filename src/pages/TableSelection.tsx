@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Check } from "lucide-react";
 import { toast } from "sonner";
-import { formatCurrency } from "@/utils/paymentUtils";
 
 // Mock tables data
 const mockTables = [
@@ -116,13 +115,13 @@ export default function TableSelection() {
               {cart.map((item) => (
                 <div key={item.id} className="flex justify-between">
                   <span>{item.quantity} × {item.name}</span>
-                  <span>{formatCurrency(item.price * item.quantity)}</span>
+                  <span>${(item.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
             </div>
             <div className="flex justify-between font-bold pt-4 border-t">
               <span>Total</span>
-              <span>{formatCurrency(totalPrice)}</span>
+              <span>${totalPrice.toFixed(2)}</span>
             </div>
             
             <div className="mt-6 flex flex-col sm:flex-row gap-4">

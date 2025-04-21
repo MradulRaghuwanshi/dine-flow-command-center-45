@@ -1,7 +1,6 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -57,12 +56,6 @@ export default function MenuManagement() {
   const [isAddMenuItemOpen, setIsAddMenuItemOpen] = useState(false);
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
   const [newCategory, setNewCategory] = useState("");
-  const [manualOrder, setManualOrder] = useState({
-    customer: "",
-    items: "",
-    total: "",
-  });
-  const [manualOrdersList, setManualOrdersList] = useState<any[]>([]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -503,53 +496,6 @@ export default function MenuManagement() {
           </DialogContent>
         </Dialog>
       )}
-
-      <Card className="mb-4">
-        <CardHeader>
-          <CardTitle>Manually Add Restaurant Order</CardTitle>
-          <CardDescription>Add offline/phone orders to the system</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <Input
-              value={manualOrder.customer}
-              onChange={e => setManualOrder({ ...manualOrder, customer: e.target.value })}
-              placeholder="Customer name"
-              className="sm:w-1/3"
-            />
-            <Input
-              value={manualOrder.items}
-              onChange={e => setManualOrder({ ...manualOrder, items: e.target.value })}
-              placeholder="Items (comma separated)"
-              className="sm:w-1/3"
-            />
-            <Input
-              value={manualOrder.total}
-              onChange={e => setManualOrder({ ...manualOrder, total: e.target.value })}
-              placeholder="Total Amount (₹)"
-              type="number"
-              className="sm:w-1/3"
-            />
-            <Button
-              onClick={() => {
-                if (manualOrder.customer && manualOrder.items && manualOrder.total) {
-                  setManualOrdersList([...manualOrdersList, { ...manualOrder, id: Date.now() }]);
-                  setManualOrder({ customer: "", items: "", total: "" });
-                }
-              }}
-            >Add Order</Button>
-          </div>
-          <div className="mt-2">
-            {manualOrdersList.map(order => (
-              <div key={order.id} className="text-sm flex gap-4 py-1 border-b last:border-none">
-                <span className="w-1/4 font-semibold">{order.customer}</span>
-                <span className="w-1/2">{order.items}</span>
-                <span className="w-1/4 font-bold">&#8377;{order.total}</span>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
