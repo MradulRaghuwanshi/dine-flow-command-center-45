@@ -77,11 +77,12 @@ const hourlyOrderData = [
 ];
 
 export default function Analytics() {
-  // Format currency
+  // Format currency with ₹ symbol
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'INR',
+      maximumFractionDigits: 0
     }).format(amount);
   };
 
@@ -198,8 +199,8 @@ export default function Analytics() {
                   <BarChart data={dailyRevenueData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
-                    <YAxis tickFormatter={(value) => `$${value}`} />
-                    <Tooltip formatter={(value) => [`$${value}`, 'Revenue']} />
+                    <YAxis tickFormatter={(value) => `₹${value}`} />
+                    <Tooltip formatter={(value) => [`₹${value}`, 'Revenue']} />
                     <Bar dataKey="revenue" fill="#1a365d" name="Revenue" />
                   </BarChart>
                 </ResponsiveContainer>

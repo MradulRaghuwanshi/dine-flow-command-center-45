@@ -1,7 +1,8 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { OffersSlider } from "@/components/offers/OffersSlider";
+import { mockOffers } from "@/data/mockOffers";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { 
@@ -27,7 +28,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 
-// Types for cart items
 type CartItem = {
   id: string;
   name: string;
@@ -40,34 +40,28 @@ export default function OnlineMenu() {
   const [searchTerm, setSearchTerm] = useState("");
   const [cart, setCart] = useState<CartItem[]>([]);
   const [expandedCategories, setExpandedCategories] = useState<string[]>(mockCategories.map(c => c.id));
+  const [offers] = useState(mockOffers);
   const navigate = useNavigate();
 
-  // Calculate total items in cart
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  
-  // Calculate total price
   const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-  // Filter menu items based on search term
   const filteredMenuItems = mockMenuItems.filter(item => 
     item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
     item.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Add item to cart
   const addToCart = (item: typeof mockMenuItems[0]) => {
     setCart(prevCart => {
       const existingItem = prevCart.find(cartItem => cartItem.id === item.id);
       
       if (existingItem) {
-        // Increment quantity if item already in cart
         return prevCart.map(cartItem => 
           cartItem.id === item.id 
             ? { ...cartItem, quantity: cartItem.quantity + 1 } 
             : cartItem
         );
       } else {
-        // Add new item to cart
         return [...prevCart, { 
           id: item.id, 
           name: item.name, 
@@ -81,32 +75,27 @@ export default function OnlineMenu() {
     toast.success(`Added ${item.name} to cart`);
   };
 
-  // Remove item from cart
   const removeFromCart = (itemId: string) => {
     setCart(prevCart => {
       const existingItem = prevCart.find(item => item.id === itemId);
       
       if (existingItem && existingItem.quantity > 1) {
-        // Decrement quantity if more than 1
         return prevCart.map(item => 
           item.id === itemId 
             ? { ...item, quantity: item.quantity - 1 } 
             : item
         );
       } else {
-        // Remove item from cart
         return prevCart.filter(item => item.id !== itemId);
       }
     });
   };
 
-  // Clear cart
   const clearCart = () => {
     setCart([]);
     toast.info("Cart cleared");
   };
 
-  // Toggle category expansion
   const toggleCategory = (categoryId: string) => {
     setExpandedCategories(prev => 
       prev.includes(categoryId)
@@ -115,24 +104,20 @@ export default function OnlineMenu() {
     );
   };
 
-  // Handle checkout
   const handleCheckout = () => {
     if (cart.length === 0) {
       toast.error("Your cart is empty");
       return;
     }
     
-    // Store cart in localStorage for use in checkout process
     localStorage.setItem("dineflow-cart", JSON.stringify(cart));
     localStorage.setItem("dineflow-total", totalPrice.toString());
     
-    // Navigate to table selection page
     navigate("/online-menu/table-selection");
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
+    <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
@@ -248,9 +233,10 @@ export default function OnlineMenu() {
           </div>
         </div>
       </header>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-6 flex-1">
+      
+      <main className="container mx-auto px-4 py-6">
+        <OffersSlider offers={offers} />
+        
         <div className="grid gap-6">
           {mockCategories.map((category) => {
             const categoryItems = filteredMenuItems.filter(
@@ -330,7 +316,6 @@ export default function OnlineMenu() {
         </div>
       </main>
       
-      {/* Footer */}
       <footer className="bg-gray-800 text-white py-8">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

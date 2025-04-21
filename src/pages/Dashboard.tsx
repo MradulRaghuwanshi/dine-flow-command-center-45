@@ -29,7 +29,7 @@ export default function Dashboard() {
     },
     {
       title: "Revenue",
-      value: "$2,345",
+      value: "₹2,345",
       icon: <DollarSign className="h-4 w-4 text-muted-foreground" />,
       change: "+18% from last week",
       changeType: "positive" as const,
@@ -43,7 +43,7 @@ export default function Dashboard() {
     },
     {
       title: "Avg. Order Value",
-      value: "$56",
+      value: "₹56",
       icon: <BarChart3 className="h-4 w-4 text-muted-foreground" />,
       change: "+2% from last week",
       changeType: "positive" as const,

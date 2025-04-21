@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,6 +21,9 @@ import {
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { OffersManagement } from "@/components/settings/OffersManagement";
+import { PaymentSettings, PaymentLink } from "@/components/settings/PaymentSettings";
+import { mockOffers, Offer } from "@/data/mockOffers";
 
 export default function Settings() {
   const [restaurantDetails, setRestaurantDetails] = useState({
@@ -42,12 +44,14 @@ export default function Settings() {
     }
   });
 
-  const [paymentMethods, setPaymentMethods] = useState([
-    { id: "1", name: "Cash", enabled: true },
-    { id: "2", name: "Credit Card", enabled: true },
-    { id: "3", name: "Mobile Payment", enabled: true },
-    { id: "4", name: "Online Payment", enabled: false },
+  const [paymentLinks, setPaymentLinks] = useState<PaymentLink[]>([
+    { id: "1", name: "Cash", url: "", enabled: true },
+    { id: "2", name: "Credit Card", url: "", enabled: true },
+    { id: "3", name: "UPI", url: "upi://pay?pa=example@bank&pn=BistroRestaurant", enabled: true },
+    { id: "4", name: "PayTM", url: "https://paytm.com/merchantid", enabled: false },
   ]);
+
+  const [offers, setOffers] = useState<Offer[]>(mockOffers);
 
   const [users, setUsers] = useState([
     { id: "1", name: "John Smith", email: "john@bistrobella.com", role: "Admin", lastActive: "2 hours ago" },
@@ -94,14 +98,6 @@ export default function Settings() {
     setTables(tables.filter(table => table.id !== id));
   };
 
-  const togglePaymentMethod = (id: string) => {
-    setPaymentMethods(
-      paymentMethods.map(method => 
-        method.id === id ? { ...method, enabled: !method.enabled } : method
-      )
-    );
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -118,6 +114,7 @@ export default function Settings() {
           <TabsTrigger value="hours">Working Hours</TabsTrigger>
           <TabsTrigger value="tables">Tables</TabsTrigger>
           <TabsTrigger value="payment">Payment Methods</TabsTrigger>
+          <TabsTrigger value="offers">Offers</TabsTrigger>
           <TabsTrigger value="users">User Access</TabsTrigger>
         </TabsList>
         
@@ -449,43 +446,18 @@ export default function Settings() {
         
         {/* Payment Methods Tab */}
         <TabsContent value="payment">
-          <Card>
-            <CardHeader>
-              <CardTitle>Payment Methods</CardTitle>
-              <CardDescription>
-                Configure the payment methods your restaurant accepts
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {paymentMethods.map(method => (
-                  <div
-                    key={method.id}
-                    className="flex items-center justify-between p-4 border rounded-md"
-                  >
-                    <div className="flex items-center gap-3">
-                      <CreditCard className="h-5 w-5 text-muted-foreground" />
-                      <span className="font-medium">{method.name}</span>
-                    </div>
-                    <Switch
-                      checked={method.enabled}
-                      onCheckedChange={() => togglePaymentMethod(method.id)}
-                    />
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-            <CardFooter className="justify-between">
-              <Button variant="outline">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Payment Method
-              </Button>
-              <Button>
-                <Save className="h-4 w-4 mr-2" />
-                Save Changes
-              </Button>
-            </CardFooter>
-          </Card>
+          <PaymentSettings 
+            paymentLinks={paymentLinks} 
+            onPaymentLinksChange={setPaymentLinks} 
+          />
+        </TabsContent>
+        
+        {/* Offers Tab */}
+        <TabsContent value="offers">
+          <OffersManagement 
+            offers={offers}
+            onOffersChange={setOffers}
+          />
         </TabsContent>
         
         {/* Users Tab */}
