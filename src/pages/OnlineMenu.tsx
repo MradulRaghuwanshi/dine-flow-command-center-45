@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -42,6 +41,16 @@ export default function OnlineMenu() {
   const [searchTerm, setSearchTerm] = useState("");
   const [cart, setCart] = useState<CartItem[]>([]);
   const [expandedCategories, setExpandedCategories] = useState<string[]>(mockCategories.map(c => c.id));
+  const [offersList, setOffersList] = useState([
+    {
+      id: "promo1",
+      title: "50% Off on All Appetizers",
+      description: "Valid on weekdays from 3 PM to 6 PM",
+      imageUrl: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1000",
+      linkUrl: "/online-menu#appetizers",
+    },
+    // Add more offers here or get from localStorage/mock for now
+  ]);
   const navigate = useNavigate();
 
   // Calculate total items in cart
@@ -254,7 +263,7 @@ export default function OnlineMenu() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6 flex-1">
         {/* Promotion Slider */}
-        <PromotionSlider />
+        <PromotionSlider promotions={offersList} />
         
         <div className="grid gap-6">
           {mockCategories.map((category) => {

@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   BarChart3, 
@@ -30,6 +29,7 @@ import {
   PieChart,
   Cell,
 } from "recharts";
+import * as XLSX from "xlsx";
 
 // Sample data for charts
 const dailyRevenueData = [
@@ -77,12 +77,9 @@ const hourlyOrderData = [
 ];
 
 export default function Analytics() {
-  // Format currency
+  // Format currency in Indian Rupees
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(amount);
+    return `₹${amount.toFixed(2)}`;
   };
 
   return (
@@ -103,7 +100,20 @@ export default function Analytics() {
               <SelectItem value="custom">Custom Range</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => {
+              // Gather all analytics data you wish to export
+              const data = [
+                { Metric: "Total Revenue", Value: 12450 },
+                { Metric: "Total Orders", Value: 246 },
+                { Metric: "Avg. Order Value", Value: 50.61 },
+                { Metric: "Customers", Value: 184 },
+                // You can add more, e.g., dailyRevenueData, categoryData etc.
+              ];
+              const ws = XLSX.utils.json_to_sheet(data);
+              const wb = XLSX.utils.book_new();
+              XLSX.utils.book_append_sheet(wb, ws, "Analytics");
+              XLSX.writeFile(wb, "analytics_export.xlsx");
+            }}>
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
@@ -198,8 +208,8 @@ export default function Analytics() {
                   <BarChart data={dailyRevenueData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
-                    <YAxis tickFormatter={(value) => `$${value}`} />
-                    <Tooltip formatter={(value) => [`$${value}`, 'Revenue']} />
+                    <YAxis tickFormatter={(value) => `₹${value}`} />
+                    <Tooltip formatter={(value) => [`₹${value}`, 'Revenue']} />
                     <Bar dataKey="revenue" fill="#1a365d" name="Revenue" />
                   </BarChart>
                 </ResponsiveContainer>

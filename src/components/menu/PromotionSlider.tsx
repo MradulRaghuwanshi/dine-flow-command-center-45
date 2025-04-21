@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react"; 
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
 
-// Types for promotions
+// Accept promotions as props for dynamic updates!
 export type Promotion = {
   id: string;
   title: string;
@@ -19,40 +19,11 @@ export type Promotion = {
   linkUrl: string;
 };
 
-// Mock promotions data (in a real app, this would come from an API)
-const mockPromotions: Promotion[] = [
-  {
-    id: "promo1",
-    title: "50% Off on All Appetizers",
-    description: "Valid on weekdays from 3 PM to 6 PM",
-    imageUrl: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1000",
-    linkUrl: "/online-menu#appetizers",
-  },
-  {
-    id: "promo2",
-    title: "Special Weekend Brunch",
-    description: "Enjoy our special brunch menu with complimentary drinks",
-    imageUrl: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1000",
-    linkUrl: "/online-menu#brunch",
-  },
-  {
-    id: "promo3",
-    title: "Buy 1 Get 1 Free Desserts",
-    description: "Every Tuesday and Thursday",
-    imageUrl: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?q=80&w=1000",
-    linkUrl: "/online-menu#desserts",
-  },
-];
+type PromotionSliderProps = {
+  promotions: Promotion[];
+};
 
-export default function PromotionSlider() {
-  const [promotions, setPromotions] = useState<Promotion[]>(mockPromotions);
-
-  // In a real app, fetch promotions from an API
-  useEffect(() => {
-    // This would be replaced with an actual API call
-    // Example: fetchPromotions().then(data => setPromotions(data));
-  }, []);
-
+export default function PromotionSlider({ promotions }: PromotionSliderProps) {
   return (
     <div className="w-full max-w-6xl mx-auto mb-8">
       <Carousel className="w-full">
