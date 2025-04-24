@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { mockOrders } from "@/data/mockData";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,9 +39,9 @@ export default function OrderHistory() {
   const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'INR'
     }).format(amount);
   };
 
@@ -61,7 +60,6 @@ export default function OrderHistory() {
     return colors[status];
   };
 
-  // Filter orders based on search term and filters
   const filteredOrders = orders.filter(order => {
     const matchesSearch = searchTerm === "" || 
       order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -78,7 +76,6 @@ export default function OrderHistory() {
     return matchesSearch && matchesStatus && matchesTable && matchesDate;
   });
 
-  // Get unique table numbers
   const tableNumbers = [...new Set(orders.map(order => order.tableNumber))].sort((a, b) => a - b);
 
   return (
@@ -173,7 +170,6 @@ export default function OrderHistory() {
         </CardContent>
       </Card>
       
-      {/* Filtered orders count */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">
           {filteredOrders.length} {filteredOrders.length === 1 ? 'Order' : 'Orders'}
@@ -184,7 +180,6 @@ export default function OrderHistory() {
         </Button>
       </div>
       
-      {/* Orders table */}
       <Card>
         <CardContent className="p-0">
           <Table>

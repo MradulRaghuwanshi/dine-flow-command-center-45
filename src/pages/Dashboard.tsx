@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
@@ -49,6 +48,14 @@ export default function Dashboard() {
       changeType: "positive" as const,
     },
   ];
+
+  // Update formatCurrency to use Indian Rupee
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR'
+    }).format(amount);
+  };
 
   return (
     <div className="space-y-6">
