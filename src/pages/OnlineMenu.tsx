@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +9,7 @@ import { PageFooter } from "@/components/menu/PageFooter";
 import { mockCategories, mockMenuItems } from "@/data/mockData";
 import { mockOffers } from "@/data/mockOffers";
 import { useNavigate } from "react-router-dom";
-import { Search } from "lucide-react";
+import { Search, ArrowRight } from "lucide-react";
 
 type MenuItemType = {
   id: string;

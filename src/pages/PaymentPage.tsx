@@ -1,12 +1,10 @@
-
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Check, CreditCard } from "lucide-react";
+import { ArrowLeft, Check, CreditCard, IndianRupee } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { IndianRupeeIcon } from "@heroicons/react/24/outline";
 
 type CartItem = {
   id: string;
@@ -110,7 +108,7 @@ export default function PaymentPage() {
                 <span>{item.quantity}x {item.name}</span>
                 <span>
                   <span className="inline-flex items-center gap-1">
-                    <IndianRupeeIcon className="h-3 w-3" />
+                    <IndianRupee className="h-3 w-3" />
                     {item.price.toFixed(2)}
                   </span>
                 </span>
@@ -146,7 +144,7 @@ export default function PaymentPage() {
                 className="h-auto py-4 flex flex-col gap-2"
                 onClick={() => setPaymentMethod("cash")}
               >
-                <IndianRupeeIcon className="h-6 w-6" />
+                <IndianRupee className="h-6 w-6" />
                 <span>Cash on Delivery</span>
               </Button>
               

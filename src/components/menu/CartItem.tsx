@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { PlusCircle, MinusCircle } from "lucide-react";
+import { PlusCircle, MinusCircle, IndianRupee } from "lucide-react";
 
 type CartItemProps = {
   id: string;
@@ -24,8 +24,9 @@ export function CartItem({ id, name, price, quantity, image, onAdd, onRemove }: 
       </div>
       <div className="flex-1">
         <h3 className="font-medium">{name}</h3>
-        <p className="text-sm text-muted-foreground">
-          ₹{price.toFixed(2)}
+        <p className="text-sm text-muted-foreground flex items-center gap-1">
+          <IndianRupee className="h-3 w-3" />
+          {price.toFixed(2)}
         </p>
       </div>
       <div className="flex items-center gap-1">
