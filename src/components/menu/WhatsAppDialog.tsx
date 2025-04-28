@@ -52,7 +52,11 @@ export function WhatsAppDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={onSubmit} className="flex items-center gap-2">
+          <Button 
+            onClick={onSubmit} 
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium"
+            size="lg"
+          >
             Continue to Table Selection
             <ArrowRight className="h-4 w-4" />
           </Button>
