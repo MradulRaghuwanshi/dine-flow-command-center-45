@@ -12,7 +12,8 @@ import {
   MinusCircle,
   ChevronDown,
   ChevronUp,
-  Phone
+  Phone,
+  ArrowRight
 } from "lucide-react";
 import { mockCategories, mockMenuItems } from "@/data/mockData";
 import { Badge } from "@/components/ui/badge";
@@ -243,6 +244,15 @@ export default function OnlineMenu() {
                             onChange={(e) => setWhatsAppNumber(e.target.value)}
                           />
                         </div>
+                        {whatsAppNumber.trim() && (
+                          <Button 
+                            className="w-full mt-2 flex items-center justify-center gap-2"
+                            onClick={proceedToPay}
+                          >
+                            Proceed to Table Selection
+                            <ArrowRight className="h-4 w-4" />
+                          </Button>
+                        )}
                       </div>
                       
                       <Separator />
@@ -430,8 +440,9 @@ export default function OnlineMenu() {
             <Button variant="outline" onClick={() => setIsWhatsAppDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleWhatsAppSubmit}>
-              Continue to Checkout
+            <Button onClick={handleWhatsAppSubmit} className="flex items-center gap-2">
+              Continue to Table Selection
+              <ArrowRight className="h-4 w-4" />
             </Button>
           </DialogFooter>
         </DialogContent>
