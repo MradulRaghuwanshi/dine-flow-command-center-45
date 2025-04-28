@@ -33,7 +33,7 @@ type CartSheetProps = {
   totalPrice: number;
   whatsAppNumber: string;
   setWhatsAppNumber: (number: string) => void;
-  onAddToCart: (itemId: string) => void;
+  onAddToCart: (item: any) => void;  // Changed from (itemId: string) to accept an item object
   onRemoveFromCart: (itemId: string) => void;
   onClearCart: () => void;
   onProceedToPay: () => void;
@@ -53,7 +53,7 @@ export function CartSheet({
   const handleAddToCart = (itemId: string) => {
     const item = mockMenuItems.find(item => item.id === itemId);
     if (item) {
-      onAddToCart(itemId);
+      onAddToCart(item);  // Now passing the full item object instead of just the ID
     }
   };
 
