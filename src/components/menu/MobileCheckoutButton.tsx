@@ -16,7 +16,7 @@ export function MobileCheckoutButton({
   if (totalItems === 0) return null;
   
   return (
-    <div className="fixed bottom-4 left-4 right-4 sm:hidden">
+    <div className="fixed bottom-4 left-4 right-4 sm:hidden z-10">
       <Button 
         className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium py-6"
         onClick={onClick}

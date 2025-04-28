@@ -69,20 +69,20 @@ export function CartSheet({
           )}
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-full sm:max-w-md">
-        <SheetHeader>
+      <SheetContent className="w-full sm:max-w-md flex flex-col p-0">
+        <SheetHeader className="px-4 py-3 border-b">
           <SheetTitle>Your Cart</SheetTitle>
         </SheetHeader>
         
-        {cart.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-40 text-center">
-            <ShoppingCart className="h-12 w-12 text-gray-300 mb-2" />
-            <p className="text-muted-foreground">Your cart is empty</p>
-          </div>
-        ) : (
-          <>
-            <ScrollArea className="flex-1 mt-4 pr-4 h-[calc(100vh-12rem)]">
-              <div className="space-y-4">
+        <div className="flex flex-col flex-1 overflow-hidden">
+          {cart.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-40 text-center p-4">
+              <ShoppingCart className="h-12 w-12 text-gray-300 mb-2" />
+              <p className="text-muted-foreground">Your cart is empty</p>
+            </div>
+          ) : (
+            <ScrollArea className="flex-1 p-4">
+              <div className="space-y-4 pb-2">
                 {cart.map((item) => (
                   <CartItem
                     key={item.id}
@@ -97,55 +97,59 @@ export function CartSheet({
                 ))}
               </div>
             </ScrollArea>
-            
-            <div className="mt-4 space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="whatsapp-number">Your WhatsApp Number</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="whatsapp-number"
-                    placeholder="e.g. +91 98765 43210"
-                    value={whatsAppNumber}
-                    onChange={(e) => setWhatsAppNumber(e.target.value)}
-                  />
+          )}
+          
+          {cart.length > 0 && (
+            <div className="mt-auto border-t p-4 bg-background">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="whatsapp-number">Your WhatsApp Number</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="whatsapp-number"
+                      placeholder="e.g. +91 98765 43210"
+                      value={whatsAppNumber}
+                      onChange={(e) => setWhatsAppNumber(e.target.value)}
+                    />
+                  </div>
+                  {whatsAppNumber.trim() && (
+                    <Button 
+                      className="w-full mt-2 flex items-center justify-center gap-2"
+                      onClick={onProceedToPay}
+                    >
+                      Proceed to Table Selection
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
-                {whatsAppNumber.trim() && (
+                
+                <Separator />
+                <div className="flex justify-between">
+                  <span className="font-medium">Total</span>
+                  <span className="font-bold">₹{totalPrice.toFixed(2)}</span>
+                </div>
+                
+                <div className="flex gap-2">
                   <Button 
-                    className="w-full mt-2 flex items-center justify-center gap-2"
-                    onClick={onProceedToPay}
-                  >
-                    Proceed to Table Selection
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-              
-              <Separator />
-              <div className="flex justify-between">
-                <span className="font-medium">Total</span>
-                <span className="font-bold">₹{totalPrice.toFixed(2)}</span>
-              </div>
-              
-              <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
-                  className="flex-1"
-                  onClick={onClearCart}
-                >
-                  Clear
-                </Button>
-                <SheetClose asChild>
-                  <Button 
+                    variant="outline" 
                     className="flex-1"
-                    onClick={onProceedToPay}
+                    onClick={onClearCart}
                   >
-                    Checkout
+                    Clear
                   </Button>
-                </SheetClose>
+                  <SheetClose asChild>
+                    <Button 
+                      className="flex-1"
+                      onClick={onProceedToPay}
+                    >
+                      Checkout
+                    </Button>
+                  </SheetClose>
+                </div>
               </div>
             </div>
-          </>
-        )}
+          )}
+        </div>
       </SheetContent>
     </Sheet>
   );
