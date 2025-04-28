@@ -33,7 +33,7 @@ type CartSheetProps = {
   totalPrice: number;
   whatsAppNumber: string;
   setWhatsAppNumber: (number: string) => void;
-  onAddToCart: (item: any) => void;  // Changed from (itemId: string) to accept an item object
+  onAddToCart: (item: any) => void;
   onRemoveFromCart: (itemId: string) => void;
   onClearCart: () => void;
   onProceedToPay: () => void;
@@ -53,7 +53,7 @@ export function CartSheet({
   const handleAddToCart = (itemId: string) => {
     const item = mockMenuItems.find(item => item.id === itemId);
     if (item) {
-      onAddToCart(item);  // Now passing the full item object instead of just the ID
+      onAddToCart(item);
     }
   };
 
@@ -104,7 +104,7 @@ export function CartSheet({
                 <div className="flex gap-2">
                   <Input
                     id="whatsapp-number"
-                    placeholder="e.g. +1 202 555 0170"
+                    placeholder="e.g. +91 98765 43210"
                     value={whatsAppNumber}
                     onChange={(e) => setWhatsAppNumber(e.target.value)}
                   />
@@ -123,7 +123,7 @@ export function CartSheet({
               <Separator />
               <div className="flex justify-between">
                 <span className="font-medium">Total</span>
-                <span className="font-bold">${totalPrice.toFixed(2)}</span>
+                <span className="font-bold">₹{totalPrice.toFixed(2)}</span>
               </div>
               
               <div className="flex gap-2">

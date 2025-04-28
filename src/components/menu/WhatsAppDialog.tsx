@@ -41,7 +41,7 @@ export function WhatsAppDialog({
           <Label htmlFor="dialog-whatsapp" className="text-left">WhatsApp Number</Label>
           <Input
             id="dialog-whatsapp"
-            placeholder="e.g. +1 202 555 0170"
+            placeholder="e.g. +91 98765 43210"
             value={whatsAppNumber}
             onChange={(e) => setWhatsAppNumber(e.target.value)}
             className="mt-1"

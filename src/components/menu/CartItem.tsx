@@ -25,7 +25,7 @@ export function CartItem({ id, name, price, quantity, image, onAdd, onRemove }: 
       <div className="flex-1">
         <h3 className="font-medium">{name}</h3>
         <p className="text-sm text-muted-foreground">
-          ${price.toFixed(2)}
+          ₹{price.toFixed(2)}
         </p>
       </div>
       <div className="flex items-center gap-1">

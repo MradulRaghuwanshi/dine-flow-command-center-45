@@ -1,20 +1,28 @@
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { OffersSlider } from "@/components/offers/OffersSlider";
-import { mockOffers } from "@/data/mockOffers";
 import { Input } from "@/components/ui/input";
-import { Search, Phone } from "lucide-react";
-import { mockCategories, mockMenuItems } from "@/data/mockData";
-import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
+import { OffersSlider } from "@/components/offers/OffersSlider";
 import { MenuCategory } from "@/components/menu/MenuCategory";
 import { CartSheet } from "@/components/menu/CartSheet";
 import { WhatsAppDialog } from "@/components/menu/WhatsAppDialog";
 import { PageFooter } from "@/components/menu/PageFooter";
+import { mockCategories, mockMenuItems } from "@/data/mockData";
+import { mockOffers } from "@/data/mockOffers";
+import { useNavigate } from "react-router-dom";
+import { Search } from "lucide-react";
 
-type CartItem = {
+type MenuItemType = {
+  id: string;
+  name: string;
+  price: number;
+  description: string;
+  category: string;
+  available: boolean;
+  image: string;
+};
+
+type CartItemType = {
   id: string;
   name: string;
   price: number;
@@ -23,30 +31,23 @@ type CartItem = {
 };
 
 export default function OnlineMenu() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [expandedCategories, setExpandedCategories] = useState<string[]>(mockCategories.map(c => c.id));
-  const [offers] = useState(mockOffers);
-  const [isWhatsAppDialogOpen, setIsWhatsAppDialogOpen] = useState(false);
-  const [whatsAppNumber, setWhatsAppNumber] = useState("");
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [expandedCategories, setExpandedCategories] = useState<string[]>(["cat1"]);
+  const [cart, setCart] = useState<CartItemType[]>([]);
+  const [whatsAppNumber, setWhatsAppNumber] = useState("");
+  const [isWhatsAppDialogOpen, setIsWhatsAppDialogOpen] = useState(false);
+  const [cartShown, setCartShown] = useState(false);
 
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const toggleCategory = (categoryId: string) => {
+    setExpandedCategories(prev => 
+      prev.includes(categoryId) 
+        ? prev.filter(id => id !== categoryId)
+        : [...prev, categoryId]
+    );
+  };
 
-  useEffect(() => {
-    const savedNumber = localStorage.getItem("dineflow-whatsapp");
-    if (savedNumber) {
-      setWhatsAppNumber(savedNumber);
-    }
-  }, []);
-
-  const filteredMenuItems = mockMenuItems.filter(item => 
-    item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    item.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const addToCart = (item: typeof mockMenuItems[0]) => {
+  const addToCart = (item: MenuItemType) => {
     setCart(prevCart => {
       const existingItem = prevCart.find(cartItem => cartItem.id === item.id);
       
@@ -57,17 +58,15 @@ export default function OnlineMenu() {
             : cartItem
         );
       } else {
-        return [...prevCart, { 
-          id: item.id, 
-          name: item.name, 
-          price: item.price, 
+        return [...prevCart, {
+          id: item.id,
+          name: item.name,
+          price: item.price,
           quantity: 1,
           image: item.image
         }];
       }
     });
-    
-    toast.success(`Added ${item.name} to cart`);
   };
 
   const removeFromCart = (itemId: string) => {
@@ -88,61 +87,74 @@ export default function OnlineMenu() {
 
   const clearCart = () => {
     setCart([]);
-    toast.info("Cart cleared");
-  };
-
-  const toggleCategory = (categoryId: string) => {
-    setExpandedCategories(prev => 
-      prev.includes(categoryId)
-        ? prev.filter(id => id !== categoryId)
-        : [...prev, categoryId]
-    );
   };
 
   const proceedToPay = () => {
-    if (cart.length === 0) {
-      toast.error("Your cart is empty");
-      return;
-    }
-    
-    if (!whatsAppNumber.trim()) {
+    if (whatsAppNumber.trim()) {
+      // Store cart and user info in sessionStorage
+      sessionStorage.setItem('cart', JSON.stringify(cart));
+      sessionStorage.setItem('whatsAppNumber', whatsAppNumber);
+      
+      // Navigate to table selection
+      navigate('/online-menu/table-selection');
+    } else {
+      // Open WhatsApp dialog if number not provided
       setIsWhatsAppDialogOpen(true);
-      return;
     }
-    
-    localStorage.setItem("dineflow-cart", JSON.stringify(cart));
-    localStorage.setItem("dineflow-total", totalPrice.toString());
-    localStorage.setItem("dineflow-whatsapp", whatsAppNumber);
-    
-    navigate("/online-menu/table-selection");
   };
 
-  const handleWhatsAppSubmit = () => {
-    if (!whatsAppNumber.trim()) {
-      toast.error("Please enter your WhatsApp number");
-      return;
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+  // Filter menu items based on search
+  const filteredCategories = mockCategories.map(category => {
+    const items = mockMenuItems
+      .filter(item => item.category === category.id)
+      .filter(item => {
+        if (!searchTerm) return true;
+        const search = searchTerm.toLowerCase();
+        return (
+          item.name.toLowerCase().includes(search) ||
+          item.description.toLowerCase().includes(search)
+        );
+      });
+    
+    return {
+      ...category,
+      items
+    };
+  });
+
+  const showWhatsAppDialog = () => {
+    if (totalItems === 0) return;
+    
+    if (!whatsAppNumber) {
+      setIsWhatsAppDialogOpen(true);
+    } else {
+      proceedToPay();
     }
-    
-    localStorage.setItem("dineflow-whatsapp", whatsAppNumber);
-    setIsWhatsAppDialogOpen(false);
-    
-    proceedToPay();
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+    <div className="min-h-screen flex flex-col">
+      {/* Header */}
+      <header className="sticky top-0 z-10 bg-white border-b shadow-sm p-4">
+        <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">DineFlow Restaurant</h1>
+            <img
+              src="https://api.iconify.design/fluent-emoji:fork-and-knife-with-plate.svg"
+              alt="DineFlow"
+              className="h-8 w-8"
+            />
+            <h1 className="text-xl font-bold">DineFlow Restaurant</h1>
           </div>
           
           <div className="flex items-center gap-2">
-            {whatsAppNumber && (
-              <Badge variant="outline" className="flex items-center gap-1 mr-2">
-                <Phone className="h-3 w-3" />
-                {whatsAppNumber}
-              </Badge>
+            {totalItems > 0 && (
+              <Button size="sm" onClick={showWhatsAppDialog} className="hidden sm:flex items-center gap-2">
+                Proceed to Table Selection
+                <ArrowRight className="h-4 w-4" />
+              </Button>
             )}
             <CartSheet 
               cart={cart}
@@ -157,53 +169,58 @@ export default function OnlineMenu() {
             />
           </div>
         </div>
-        
-        <div className="container mx-auto px-4 pb-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="Search menu..."
-              className="pl-9 w-full"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-        </div>
       </header>
       
-      <main className="container mx-auto px-4 py-6">
-        <OffersSlider offers={offers} />
+      <main className="container mx-auto flex-1 px-4 py-6">
+        {/* Offers slider */}
+        <OffersSlider offers={mockOffers} />
         
-        <div className="grid gap-6">
-          {mockCategories.map((category) => {
-            const categoryItems = filteredMenuItems.filter(
-              (item) => item.category === category.id && item.available
-            );
-            
-            return (
-              <MenuCategory
-                key={category.id}
-                id={category.id}
-                name={category.name}
-                items={categoryItems}
-                isExpanded={expandedCategories.includes(category.id)}
-                onToggle={toggleCategory}
-                onAddToCart={addToCart}
-              />
-            );
-          })}
+        {/* Search bar */}
+        <div className="relative mb-6">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <Input
+            placeholder="Search menu items..."
+            className="pl-10"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
+        
+        {/* Menu categories */}
+        <div className="space-y-6 mb-6">
+          {filteredCategories.map(category => (
+            <MenuCategory
+              key={category.id}
+              id={category.id}
+              name={category.name}
+              items={category.items}
+              isExpanded={expandedCategories.includes(category.id)}
+              onToggle={toggleCategory}
+              onAddToCart={addToCart}
+            />
+          ))}
+        </div>
+
+        {/* Mobile proceed button */}
+        {totalItems > 0 && (
+          <div className="fixed bottom-4 left-4 right-4 sm:hidden">
+            <Button className="w-full flex items-center justify-center gap-2" onClick={showWhatsAppDialog}>
+              Proceed to Table Selection ({totalItems} items • ₹{totalPrice.toFixed(2)})
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </main>
       
-      <PageFooter />
-      
-      <WhatsAppDialog 
+      <WhatsAppDialog
         open={isWhatsAppDialogOpen}
         onOpenChange={setIsWhatsAppDialogOpen}
         whatsAppNumber={whatsAppNumber}
         setWhatsAppNumber={setWhatsAppNumber}
-        onSubmit={handleWhatsAppSubmit}
+        onSubmit={proceedToPay}
       />
+      
+      <PageFooter />
     </div>
   );
 }

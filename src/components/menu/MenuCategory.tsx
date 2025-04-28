@@ -67,7 +67,7 @@ export function MenuCategory({
                   <div className="flex-1">
                     <h3 className="font-medium">{item.name}</h3>
                     <p className="text-sm text-muted-foreground">
-                      ${item.price.toFixed(2)}
+                      ₹{item.price.toFixed(2)}
                     </p>
                     <div className="flex items-center gap-1 mt-1">
                       <Badge 

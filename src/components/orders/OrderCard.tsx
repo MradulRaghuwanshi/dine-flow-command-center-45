@@ -60,9 +60,9 @@ export function OrderCard({ order, onStatusChange, onCancelOrder }: OrderCardPro
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'INR'
     }).format(amount);
   };
 
@@ -260,7 +260,7 @@ export function OrderCard({ order, onStatusChange, onCancelOrder }: OrderCardPro
               <Label htmlFor="whatsapp-number" className="text-left">Customer's WhatsApp Number</Label>
               <Input
                 id="whatsapp-number"
-                placeholder="e.g. +1 202 555 0170"
+                placeholder="e.g. +91 98765 43210"
                 value={whatsAppNumber}
                 onChange={(e) => setWhatsAppNumber(e.target.value)}
                 className="mt-1"
