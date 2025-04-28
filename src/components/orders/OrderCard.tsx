@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,13 +9,28 @@ import {
   Coffee, 
   CreditCard, 
   Printer, 
-  XCircle 
+  XCircle,
+  Send
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { generateKOT, sendBillToWhatsApp } from "@/utils/orderUtils";
+import { toast } from "sonner";
 
 const statusIcons: Record<OrderStatus, React.ReactNode> = {
   pending: <Clock className="h-4 w-4" />,
@@ -34,6 +48,8 @@ type OrderCardProps = {
 
 export function OrderCard({ order, onStatusChange, onCancelOrder }: OrderCardProps) {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isWhatsAppDialogOpen, setIsWhatsAppDialogOpen] = useState(false);
+  const [whatsAppNumber, setWhatsAppNumber] = useState("");
   
   const nextStatus: Partial<Record<OrderStatus, OrderStatus>> = {
     pending: 'preparing',
@@ -50,6 +66,26 @@ export function OrderCard({ order, onStatusChange, onCancelOrder }: OrderCardPro
 
   const formatDateTime = (dateString: string) => {
     return new Date(dateString).toLocaleString();
+  };
+
+  const handleKOTPrint = () => {
+    generateKOT(order);
+    toast.success("KOT sent to printer");
+  };
+
+  const handleSendWhatsApp = () => {
+    if (whatsAppNumber.trim()) {
+      const restaurantNumber = "+12025550108";
+      
+      if (sendBillToWhatsApp(order, whatsAppNumber, restaurantNumber)) {
+        toast.success("Bill sent via WhatsApp");
+        setIsWhatsAppDialogOpen(false);
+      } else {
+        toast.error("Failed to send bill via WhatsApp");
+      }
+    } else {
+      toast.error("Please enter a valid WhatsApp number");
+    }
   };
 
   return (
@@ -173,7 +209,6 @@ export function OrderCard({ order, onStatusChange, onCancelOrder }: OrderCardPro
           </DialogContent>
         </Dialog>
         
-        {/* Update status button - show if there's a next status */}
         {nextStatus[order.status] && (
           <Button 
             size="sm" 
@@ -184,7 +219,6 @@ export function OrderCard({ order, onStatusChange, onCancelOrder }: OrderCardPro
           </Button>
         )}
         
-        {/* Cancel button - show if not already cancelled or served */}
         {order.status !== 'cancelled' && order.status !== 'served' && (
           <Button 
             variant="destructive" 
@@ -196,11 +230,46 @@ export function OrderCard({ order, onStatusChange, onCancelOrder }: OrderCardPro
           </Button>
         )}
         
-        {/* Print button */}
-        <Button variant="outline" size="sm" className="flex-1">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="flex-1"
+          onClick={handleKOTPrint}
+        >
           <Printer className="h-4 w-4 mr-1" />
-          Print Bill
+          KOT
         </Button>
+        
+        <AlertDialog open={isWhatsAppDialogOpen} onOpenChange={setIsWhatsAppDialogOpen}>
+          <AlertDialogTrigger asChild>
+            <Button variant="outline" size="sm" className="flex-1 bg-green-50 text-green-600 border-green-200 hover:bg-green-100">
+              <Send className="h-4 w-4 mr-1" />
+              WhatsApp Bill
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Send bill via WhatsApp</AlertDialogTitle>
+              <AlertDialogDescription>
+                Enter the customer's WhatsApp number to send the bill.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="py-4">
+              <Label htmlFor="whatsapp-number" className="text-left">Customer's WhatsApp Number</Label>
+              <Input
+                id="whatsapp-number"
+                placeholder="e.g. +1 202 555 0170"
+                value={whatsAppNumber}
+                onChange={(e) => setWhatsAppNumber(e.target.value)}
+                className="mt-1"
+              />
+            </div>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleSendWhatsApp}>Send</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </CardFooter>
     </Card>
   );

@@ -11,7 +11,8 @@ import {
   PlusCircle, 
   MinusCircle,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Phone
 } from "lucide-react";
 import { mockCategories, mockMenuItems } from "@/data/mockData";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +28,15 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import { Label } from "@/components/ui/label";
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
 
 type CartItem = {
   id: string;
@@ -41,10 +51,19 @@ export default function OnlineMenu() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [expandedCategories, setExpandedCategories] = useState<string[]>(mockCategories.map(c => c.id));
   const [offers] = useState(mockOffers);
+  const [isWhatsAppDialogOpen, setIsWhatsAppDialogOpen] = useState(false);
+  const [whatsAppNumber, setWhatsAppNumber] = useState("");
   const navigate = useNavigate();
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+  useEffect(() => {
+    const savedNumber = localStorage.getItem("dineflow-whatsapp");
+    if (savedNumber) {
+      setWhatsAppNumber(savedNumber);
+    }
+  }, []);
 
   const filteredMenuItems = mockMenuItems.filter(item => 
     item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -104,16 +123,34 @@ export default function OnlineMenu() {
     );
   };
 
-  const handleCheckout = () => {
+  const proceedToPay = () => {
     if (cart.length === 0) {
       toast.error("Your cart is empty");
       return;
     }
     
+    if (!whatsAppNumber.trim()) {
+      setIsWhatsAppDialogOpen(true);
+      return;
+    }
+    
     localStorage.setItem("dineflow-cart", JSON.stringify(cart));
     localStorage.setItem("dineflow-total", totalPrice.toString());
+    localStorage.setItem("dineflow-whatsapp", whatsAppNumber);
     
     navigate("/online-menu/table-selection");
+  };
+
+  const handleWhatsAppSubmit = () => {
+    if (!whatsAppNumber.trim()) {
+      toast.error("Please enter your WhatsApp number");
+      return;
+    }
+    
+    localStorage.setItem("dineflow-whatsapp", whatsAppNumber);
+    setIsWhatsAppDialogOpen(false);
+    
+    proceedToPay();
   };
 
   return (
@@ -125,6 +162,12 @@ export default function OnlineMenu() {
           </div>
           
           <div className="flex items-center gap-2">
+            {whatsAppNumber && (
+              <Badge variant="outline" className="flex items-center gap-1 mr-2">
+                <Phone className="h-3 w-3" />
+                {whatsAppNumber}
+              </Badge>
+            )}
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="outline" className="relative">
@@ -190,6 +233,18 @@ export default function OnlineMenu() {
                     </ScrollArea>
                     
                     <div className="mt-4 space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="whatsapp-number">Your WhatsApp Number</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            id="whatsapp-number"
+                            placeholder="e.g. +1 202 555 0170"
+                            value={whatsAppNumber}
+                            onChange={(e) => setWhatsAppNumber(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                      
                       <Separator />
                       <div className="flex justify-between">
                         <span className="font-medium">Total</span>
@@ -207,7 +262,7 @@ export default function OnlineMenu() {
                         <SheetClose asChild>
                           <Button 
                             className="flex-1"
-                            onClick={handleCheckout}
+                            onClick={proceedToPay}
                           >
                             Checkout
                           </Button>
@@ -350,6 +405,37 @@ export default function OnlineMenu() {
           </div>
         </div>
       </footer>
+      
+      <Dialog open={isWhatsAppDialogOpen} onOpenChange={setIsWhatsAppDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Enter Your WhatsApp Number</DialogTitle>
+            <DialogDescription>
+              We need your WhatsApp number to send you the bill and order confirmation.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <Label htmlFor="dialog-whatsapp" className="text-left">WhatsApp Number</Label>
+            <Input
+              id="dialog-whatsapp"
+              placeholder="e.g. +1 202 555 0170"
+              value={whatsAppNumber}
+              onChange={(e) => setWhatsAppNumber(e.target.value)}
+              className="mt-1"
+            />
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsWhatsAppDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleWhatsAppSubmit}>
+              Continue to Checkout
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
