@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { toast } from "sonner";
 
 // Mock tables data
@@ -124,7 +124,18 @@ export default function TableSelection() {
               <span>₹{totalPrice.toFixed(2)}</span>
             </div>
             
-            {/* Removed the Back to Menu and Proceed to Payment buttons */}
+            {/* Added new Proceed to Payment button */}
+            {selectedTable && (
+              <div className="mt-6">
+                <Button 
+                  className="w-full flex items-center justify-center gap-2"
+                  onClick={handleProceed}
+                >
+                  Proceed to Payment
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </main>
