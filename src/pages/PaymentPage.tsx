@@ -1,9 +1,8 @@
-
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Check, Cash, QrCode, IndianRupee, CreditCard } from "lucide-react";
+import { ArrowLeft, Check, BadgeDollarSign, QrCode, IndianRupee, CreditCard } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
@@ -169,7 +168,7 @@ export default function PaymentPage() {
                 className={`flex items-center space-x-3 rounded-lg border p-4 cursor-pointer ${paymentMethod === "cash" ? "border-primary bg-primary/5" : ""}`}
               >
                 <RadioGroupItem value="cash" id="cash-option" />
-                <Cash className="h-5 w-5 text-muted-foreground" />
+                <BadgeDollarSign className="h-5 w-5 text-muted-foreground" />
                 <div className="flex-1">
                   <div className="font-medium">Cash on Delivery</div>
                   <div className="text-sm text-muted-foreground">Pay when your food arrives</div>
