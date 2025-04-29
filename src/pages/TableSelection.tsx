@@ -124,21 +124,7 @@ export default function TableSelection() {
               <span>₹{totalPrice.toFixed(2)}</span>
             </div>
             
-            <div className="mt-6 flex flex-col sm:flex-row gap-4">
-              <Button 
-                variant="outline" 
-                className="flex-1"
-                onClick={handleBackToMenu}
-              >
-                Back to Menu
-              </Button>
-              <Button 
-                className="flex-1"
-                onClick={handleProceed}
-              >
-                Proceed to Payment
-              </Button>
-            </div>
+            {/* Removed the Back to Menu and Proceed to Payment buttons */}
           </div>
         </div>
       </main>

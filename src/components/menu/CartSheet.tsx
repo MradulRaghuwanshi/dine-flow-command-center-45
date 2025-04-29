@@ -129,23 +129,7 @@ export function CartSheet({
                   <span className="font-bold">₹{totalPrice.toFixed(2)}</span>
                 </div>
                 
-                <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
-                    className="flex-1"
-                    onClick={onClearCart}
-                  >
-                    Clear
-                  </Button>
-                  <SheetClose asChild>
-                    <Button 
-                      className="flex-1"
-                      onClick={onProceedToPay}
-                    >
-                      Checkout
-                    </Button>
-                  </SheetClose>
-                </div>
+                {/* Removed the Clear and Checkout buttons */}
               </div>
             </div>
           )}
