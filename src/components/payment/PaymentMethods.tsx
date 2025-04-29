@@ -1,7 +1,7 @@
 
 import { PaymentMethodType } from "@/types/payment";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { BadgeDollarSign, CreditCard, IndianRupee, QrCode } from "lucide-react";
+import { BadgeDollarSign, Check, CreditCard, IndianRupee, QrCode } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/utils/paymentUtils";

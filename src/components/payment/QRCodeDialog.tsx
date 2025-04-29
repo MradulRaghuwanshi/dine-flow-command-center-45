@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatCurrency } from "@/utils/paymentUtils";
 import { toast } from "sonner";
+import { Check } from "lucide-react";
 
 interface QRCodeDialogProps {
   open: boolean;
@@ -42,6 +43,7 @@ export default function QRCodeDialog({
             }}
             className="w-full"
           >
+            <Check className="h-4 w-4 mr-2" />
             I've completed the payment
           </Button>
         </div>

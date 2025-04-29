@@ -9,6 +9,7 @@ import { calculateTotals, getUPILink } from "@/utils/paymentUtils";
 import OrderSummary from "@/components/payment/OrderSummary";
 import PaymentMethods from "@/components/payment/PaymentMethods";
 import QRCodeDialog from "@/components/payment/QRCodeDialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 export default function PaymentPage() {
   const navigate = useNavigate();
@@ -18,6 +19,8 @@ export default function PaymentPage() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>("cash");
   const [showQRCode, setShowQRCode] = useState(false);
+  const [showLeaveAlert, setShowLeaveAlert] = useState(false);
+  const [intendedDestination, setIntendedDestination] = useState<string>("");
   
   useEffect(() => {
     // Load cart from localStorage instead of sessionStorage
@@ -38,6 +41,16 @@ export default function PaymentPage() {
   
   // Generate UPI payment link
   const qrCodeData = getUPILink(grandTotal, tableNumber);
+  
+  // Safe navigation function to show confirmation dialog if payment is not completed
+  const safeNavigate = (destination: string) => {
+    if (!isSuccess && !isProcessing) {
+      setIntendedDestination(destination);
+      setShowLeaveAlert(true);
+    } else {
+      navigate(destination);
+    }
+  };
   
   const handlePayment = () => {
     if (paymentMethod === "upi") {
@@ -71,6 +84,24 @@ export default function PaymentPage() {
     }, 2000);
   };
   
+  // Effect to capture browser back/refresh navigation events
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!isSuccess && !isProcessing) {
+        // Standard way to show a confirmation dialog when closing/refreshing the page
+        e.preventDefault();
+        e.returnValue = ""; // This is required for the confirmation dialog to appear in most browsers
+        return "";
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [isSuccess, isProcessing]);
+  
   if (cart.length === 0) {
     return <div>Loading...</div>;
   }
@@ -81,8 +112,8 @@ export default function PaymentPage() {
         <div className="mb-6">
           <Button 
             variant="ghost" 
-            onClick={() => navigate('/online-menu/table-selection')}
-            disabled={isProcessing || isSuccess}
+            onClick={() => safeNavigate('/online-menu/table-selection')}
+            disabled={isProcessing}
             className="mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -114,6 +145,24 @@ export default function PaymentPage() {
         qrCodeData={qrCodeData}
         grandTotal={grandTotal}
       />
+      
+      {/* Confirmation Alert Dialog */}
+      <AlertDialog open={showLeaveAlert} onOpenChange={setShowLeaveAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Leave payment page?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Your payment is not complete. Are you sure you want to leave this page? Your order will not be processed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Stay on page</AlertDialogCancel>
+            <AlertDialogAction onClick={() => navigate(intendedDestination)}>
+              Leave anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
